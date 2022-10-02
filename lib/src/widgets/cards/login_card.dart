@@ -13,6 +13,7 @@ class _LoginCard extends StatefulWidget {
     required this.onSwitchConfirmSignup,
     required this.requireSignUpConfirmation,
     this.onSubmitCompleted,
+    this.onSkipAuth,
     this.hideForgotPasswordButton = false,
     this.hideSignUpButton = false,
     this.loginAfterSignUp = true,
@@ -26,6 +27,7 @@ class _LoginCard extends StatefulWidget {
   final Function onSwitchSignUpAdditionalData;
   final Function onSwitchConfirmSignup;
   final Function? onSubmitCompleted;
+  final Function? onSkipAuth;
   final bool hideForgotPasswordButton;
   final bool hideSignUpButton;
   final bool loginAfterSignUp;
@@ -221,6 +223,12 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
     }
 
     widget.onSubmitCompleted?.call();
+
+    return true;
+  }
+
+  Future<bool> _skipAuth() async {
+    widget.onSkipAuth?.call();
 
     return true;
   }
@@ -494,6 +502,17 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
     return Container();
   }
 
+  Widget _buildSkipAuthButton(ThemeData theme, LoginMessages messages) {
+    return ScaleTransition(
+      scale: _buttonScaleAnimation,
+      child: AnimatedButton(
+        controller: _submitController,
+        text: messages.skipButton,
+        onPressed: () => _skipAuth(),
+      ),
+    );
+  }
+
   Widget _buildButtonColumn(ThemeData theme, LoginMessages messages,
       List<LoginProvider> buttonProvidersList, LoginTheme loginTheme) {
     return Column(
@@ -651,6 +670,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
                     ? _buildProvidersTitleFirst(messages)
                     : Container(),
                 _buildProvidersLogInButton(theme, messages, auth, loginTheme),
+                _buildSkipAuthButton(theme, messages),
               ],
             ),
           ),

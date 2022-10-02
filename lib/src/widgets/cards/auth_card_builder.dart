@@ -42,6 +42,7 @@ class AuthCard extends StatefulWidget {
       this.passwordValidator,
       this.onSubmit,
       this.onSubmitCompleted,
+      this.onSkipAuth,
       this.hideForgotPasswordButton = false,
       this.hideSignUpButton = false,
       this.loginAfterSignUp = true,
@@ -59,6 +60,7 @@ class AuthCard extends StatefulWidget {
   final FormFieldValidator<String>? passwordValidator;
   final Function? onSubmit;
   final Function? onSubmitCompleted;
+  final Function? onSkipAuth;
   final bool hideForgotPasswordButton;
   final bool hideSignUpButton;
   final bool loginAfterSignUp;
@@ -334,6 +336,11 @@ class AuthCardState extends State<AuthCard> with TickerProviderStateMixin {
               _forwardChangeRouteAnimation(_loginCardKey).then((_) {
                 widget.onSubmitCompleted!();
               });
+            },
+            onSkipAuth: () => {
+              _forwardChangeRouteAnimation(_loginCardKey).then((_) {
+                widget.onSkipAuth!();
+              })
             },
             requireSignUpConfirmation: auth.onConfirmSignup != null,
             onSwitchConfirmSignup: () => _changeCard(_confirmSignup),
