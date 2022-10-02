@@ -611,8 +611,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
             padding: const EdgeInsets.only(
               left: cardPadding,
               right: cardPadding,
-              top: cardPadding + 10,
-              bottom: cardPadding
+              top: cardPadding + 10
             ),
             width: cardWidth,
             child: Column(
@@ -652,7 +651,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
             ]),
           ),
           Container(
-            padding: Paddings.fromRBL(cardPadding),
+            padding: EdgeInsets.only(left: cardPadding, right: cardPadding, bottom: cardPadding + 10),
             width: cardWidth,
             child: Column(
               children: <Widget>[
