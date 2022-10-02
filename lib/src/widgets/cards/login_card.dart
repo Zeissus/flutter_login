@@ -612,6 +612,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
               left: cardPadding,
               right: cardPadding,
               top: cardPadding + 10,
+              bottom: cardPadding
             ),
             width: cardWidth,
             child: Column(
