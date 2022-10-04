@@ -58,6 +58,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
   late AnimationController _switchAuthController;
   late AnimationController _postSwitchAuthController;
   late AnimationController _submitController;
+  late AnimationController _skipController;
 
   ///list of AnimationController each one responsible for a authentication provider icon
   List<AnimationController> _providerControllerList = <AnimationController>[];
@@ -91,6 +92,10 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
     _submitController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
+    );
+    _skipController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
     );
     _providerControllerList = auth.loginProviders
         .map(
@@ -130,6 +135,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
     _switchAuthController.dispose();
     _postSwitchAuthController.dispose();
     _submitController.dispose();
+    _skipController.dispose();
 
     for (var controller in _providerControllerList) {
       controller.dispose();
@@ -228,6 +234,21 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
   }
 
   Future<bool> _skipAuth() async {
+    // a hack to force unfocus the soft keyboard. If not, after change-route
+    // animation completes, it will trigger rebuilding this widget and show all
+    // textfields and buttons again before going to new route
+    FocusScope.of(context).requestFocus(FocusNode());
+
+    // workaround to run after _cardSizeAnimation in parent finished
+    // need a cleaner way but currently it works so..
+    Future.delayed(const Duration(milliseconds: 270), () {
+      if (mounted) {
+        setState(() => _showShadow = false);
+      }
+    });
+
+    await _skipController.forward();
+
     widget.onSkipAuth?.call();
 
     return true;
@@ -420,16 +441,19 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
       offset: .5,
       curve: _textButtonLoadingAnimationInterval,
       fadeDirection: FadeDirection.topToBottom,
-      child: MaterialButton(
-        disabledTextColor: theme.primaryColor,
-        onPressed: buttonEnabled ? _switchAuthMode : null,
-        padding: loginTheme.authButtonPadding ??
-            const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        textColor: loginTheme.switchAuthTextColor ?? calculatedTextColor,
-        child: AnimatedText(
-          text: auth.isSignup ? messages.loginButton : messages.signupButton,
-          textRotation: AnimatedTextRotation.down,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        child: MaterialButton(
+          disabledTextColor: theme.primaryColor,
+          onPressed: buttonEnabled ? _switchAuthMode : null,
+          padding: loginTheme.authButtonPadding ??
+              const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          textColor: loginTheme.switchAuthTextColor ?? calculatedTextColor,
+          child: AnimatedText(
+            text: auth.isSignup ? messages.loginButton : messages.signupButton,
+            textRotation: AnimatedTextRotation.down,
+          ),
         ),
       ),
     );
@@ -506,7 +530,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
     return ScaleTransition(
       scale: _buttonScaleAnimation,
       child: AnimatedButton(
-        controller: _submitController,
+        controller: _skipController,
         text: messages.skipButton,
         onPressed: () => _skipAuth(),
       ),

@@ -44,7 +44,7 @@ class LoginMessages with ChangeNotifier {
   static const defaultForgotPasswordButton = 'Forgot Password?';
   static const defaultLoginButton = 'LOGIN';
   static const defaultSignupButton = 'SIGNUP';
-  static const defaultSkipButton = 'SKIP FOR NOW';
+  static const defaultSkipButton = 'LATER';
   static const defaultRecoverPasswordButton = 'RECOVER';
   static const defaultRecoverPasswordIntro = 'Reset your password here';
   static const defaultRecoverPasswordDescription =
